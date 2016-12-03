@@ -1,0 +1,20 @@
+{
+    "name": "crisen/laravel-alipay",
+    "description": "the alipay package of laravel 5",
+    "require": {
+        "illuminate/support": "5.0*"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "crisenchou",
+            "email": "crisen@crisen.org"
+        }
+    ],
+    "autoload": {
+        "psr-0": {
+            "Crisen\\LaravelAlipay\\": "src/"
+        }
+    },
+    "minimum-stability": "stable"
+}
