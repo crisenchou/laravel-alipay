@@ -3,30 +3,36 @@
 namespace Crisen\LaravelAlipay\payment;
 
 
-class AlipayPrecreate extends Alipay{
-    
-    private $method = 'alipay.trade.precreate';//
+class AlipayPrecreate extends Alipay
+{
 
-    protected function __construct(){
+    protected function __construct()
+    {
         $config = config_path('alipay.php');
-        $this->appid = $config['appid'];
-        $this->notify_url = $config['notify_url'];
-        $this->version = $config['version'];
-        $this->sign = $config['sign'];
-        $this->sign_type = $config['sign_type'];
-        $this->charset = $config['charset'];
-    }
-    
-
-    public function getPayUrl(){
-        $this->setSysParams();
-        $this->setSign();
-        $responce = $this->httpPost($this->gateway,$this->sysParams);
-        if(isset($responce['qrcode'])){
-            return $responce['qrcode'];
-        }else{
-            //exception
+        $this->setAppid($config['appid']);
+        $this->setNotifyUrl($config['notify_url']);
+        $this->setVersion($config['version']);
+        $this->setSignType($config['sign_type']);
+        $this->setGateway($config['gateway']);
+        $this->setMethod('alipay.trade.precreate');
+        $this->setPublicKey($config['alipay_public_key']);
+        if (!!$config['cert_path']) {
+            $this->setRSAPrivateFilePath($config['cert_path']);
+        } else {
+            $this->setPrivateKey($config['merchant_private_key']);
         }
     }
-    
+
+    public function getPayUrl()
+    {
+        $this->setSysParams();
+        $this->setSign();
+        $responce = $this->httpPost($this->getGateway(), $this->getSysParams());
+        if (isset($responce['qrcode'])) {
+            return $responce['qrcode'];
+        } else {
+            return $responce;
+        }
+    }
+
 }
