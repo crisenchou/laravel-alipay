@@ -1,23 +1,19 @@
 # laravel-alipay
-alipay of laravel5
 
+> alipay of laravel5
 
+## Installation
+> composer require "crisen/laravel-alipay":"dev-master"
 
-扫码支付
-$alipay = new AlipayPrecreate();
-$bizContent =[
+## Document
+
+- $alipay = new AlipayPrecreate();
+- $bizContent =[
     'out_trade_no'=>time(),
     'totle_amount'=>1,
     'body'=>'test goods',
     'subjiect'=>'test'
 ]
-$alipay->setBizContent($bizContent);
-
-/*
-$alipay->setOutTradeNo();
-$alipay->setTotalAmount();
-$alipay->setSubject();
-$alipay->setBody();
-*/
-$qrcode = $alipay->getPayUrl();
-echo $qrcode;
+- $alipay->setBizContent($bizContent);
+- $qrcode = $alipay->getPayUrl();
+- echo $qrcode;
