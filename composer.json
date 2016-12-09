@@ -2,7 +2,7 @@
     "name": "crisen/laravel-alipay",
     "description": "the alipay package of laravel 5",
     "require": {
-        "illuminate/support": "5.0*"
+        "illuminate/support": "^4.0|^5.0"
     },
     "license": "MIT",
     "authors": [
