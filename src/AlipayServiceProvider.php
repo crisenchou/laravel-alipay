@@ -6,7 +6,7 @@ use Illuminate\Support\ServiceProvider;
 
 
 
-class LaravelAlipayServiceProvider extends ServiceProvider
+class AlipayServiceProvider extends ServiceProvider
 {
     /**
      * Indicates if loading of the provider is deferred.
