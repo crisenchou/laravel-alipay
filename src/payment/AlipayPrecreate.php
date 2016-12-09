@@ -6,7 +6,7 @@ namespace Crisen\LaravelAlipay\payment;
 class AlipayPrecreate extends Alipay
 {
 
-    protected function __construct()
+    public function __construct()
     {
         $config = config('alipay');
         $this->setAppid($config['appid']);
