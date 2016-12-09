@@ -142,7 +142,6 @@ abstract class Alipay
             }
         }
         unset ($k, $v);
-
         return $stringToBeSigned;
     }
 
@@ -172,8 +171,11 @@ abstract class Alipay
             $res = openssl_get_privatekey($priKey);
         }
 
+
         ($res) or die('您使用的私钥格式错误，请检查RSA私钥配置');
         openssl_sign($data, $sign, $res);
+
+        dd($sign);
 
         if (!$this->checkEmpty($this->rsaPrivateKeyFilePath)) {
             openssl_free_key($res);
@@ -232,46 +234,6 @@ abstract class Alipay
      **/
     protected function checkEmpty($value)
     {
-        return (!!$value);
-    }
-
-    /*
-    * RS 签名
-    */
-    public function rsaEncrypt($string, $rsaPublicKeyPem)
-    {
-        //读取公钥文件
-        $pubKey = file_get_contents($rsaPublicKeyPem);
-        //转换为openssl格式密钥
-        $res = openssl_get_publickey($pubKey);
-        $chrtext  = null;
-        $encodes  = [];
-        foreach ($string as $n => $block) {
-            if (!openssl_public_encrypt($string, $chrtext , $res)) {
-                echo "<br/>" . openssl_error_string() . "<br/>";
-            }
-            $encodes[] = $chrtext ;
-        }
-        $chrtext = implode(",", $encodes);
-
-        return $chrtext;
-    }
-
-    public function rsaDecrypt($data, $rsaPrivateKeyPem)
-    {
-        //读取私钥文件
-        $priKey = file_get_contents($rsaPrivateKeyPem);
-        //转换为openssl格式密钥
-        $res = openssl_get_privatekey($priKey);
-        $decodes = explode(',', $data);
-        $strnull = "";
-        $dcyCont = "";
-        foreach ($decodes as $n => $decode) {
-            if (!openssl_private_decrypt($decode, $dcyCont, $res)) {
-                echo "<br/>" . openssl_error_string() . "<br/>";
-            }
-            $strnull .= $dcyCont;
-        }
-        return $strnull;
+        return !$value;
     }
 }

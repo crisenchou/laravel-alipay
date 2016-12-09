@@ -8,7 +8,7 @@ class AlipayPrecreate extends Alipay
 
     protected function __construct()
     {
-        $config = config_path('alipay.php');
+        $config = config('alipay');
         $this->setAppid($config['appid']);
         $this->setNotifyUrl($config['notify_url']);
         $this->setVersion($config['version']);
