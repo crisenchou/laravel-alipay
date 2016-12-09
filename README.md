@@ -27,3 +27,6 @@
         $alipay->setBizContent($bizContent);
         $qrcode = $alipay->getPayUrl();
         echo $qrcode;
+
+## License
+MIT
