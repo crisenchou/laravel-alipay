@@ -8,7 +8,7 @@ abstract class Alipay
 {
 
     private $appid;//支付宝appid
-    private $method;//
+    private $method;
     private $format = 'json';
     private $charset = 'utf-8';
     private $publicKey;
@@ -119,13 +119,14 @@ abstract class Alipay
         $this->sysParams['timestamp'] = date("Y-m-d H:i:s");
         $this->sysParams['version'] = $this->version;
         $this->sysParams['charset'] = $this->charset;
+
         if ($this->notify_url) {
             $this->sysParams['notify_url'] = $this->notify_url;//可选项
         }
         if ($this->app_auth_token) {
             $this->sysParams['app_auth_token'] = $this->app_auth_token;//可选项
         }
-        $this->sysParams['biz_content'] = json_encode($this->biz_content);
+        $this->sysParams['biz_content'] = json_encode($this->biz_content, JSON_UNESCAPED_UNICODE);
         return $this->sysParams;
     }
 
@@ -136,11 +137,7 @@ abstract class Alipay
         $stringToBeSigned = '';
         $flag = '';
         foreach ($params as $k => $v) {
-            if (is_array($v)) {
-                $v = json_encode($v);
-            }
-
-            if (false === $this->isEmpty($v) && "@" != substr($v, 0, 1)) {
+            if (false === $this->isEmpty($v)) {
                 $stringToBeSigned .= $flag . "$k" . "=" . "$v";
                 $flag = '&';
             }
@@ -153,17 +150,24 @@ abstract class Alipay
     protected function setSign()
     {
         $string = $this->getSignContent($this->sysParams);
-        $sign = $this->getSign($string);
+        $sign = $this->sign($string);
         $this->sysParams['sign'] = $sign;
         return $sign;
     }
 
-    protected function checkSign()
+    protected function verifySign($data, $sign)
     {
-
+        $pubkey = $this->publicKey;
+        $res = "-----BEGIN RSA PUBLIC KEY-----\n" .
+            wordwrap($pubkey, 64, "\n", true) .
+            "\n-----END RSA PUBLIC KEY-----";
+        if (!$res) {
+            throw new Exception('您使用的公钥格式错误');
+        }
+        return openssl_verify($data, base64_decode($sign), $res);
     }
 
-    private function getSign($data)
+    private function sign($data)
     {
         if ($this->isEmpty($this->rsaPrivateKeyFilePath)) {
             $priKey = $this->rsaPrivateKey;
@@ -175,15 +179,15 @@ abstract class Alipay
             $res = openssl_get_privatekey($priKey);
         }
 
+        if (!$res) {
+            throw new Exception('您使用的私钥格式错误');
+        }
 
-        ($res) or die('您使用的私钥格式错误，请检查RSA私钥配置');
         openssl_sign($data, $sign, $res);
-
         if (!$this->isEmpty($this->rsaPrivateKeyFilePath)) {
             openssl_free_key($res);
         }
         $sign = base64_encode($sign);
-
         return $sign;
     }
 
@@ -202,18 +206,18 @@ abstract class Alipay
             curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
         }
 
-        $reponse = curl_exec($ch);
+        $response = curl_exec($ch);
 
         if (curl_errno($ch)) {
             throw new Exception(curl_error($ch), 0);
         } else {
             $httpStatusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             if (200 !== $httpStatusCode) {
-                throw new Exception($reponse, $httpStatusCode);
+                throw new Exception($response, $httpStatusCode);
             }
         }
         curl_close($ch);
-        return $reponse;
+        return $response;
 
     }
 
@@ -228,12 +232,6 @@ abstract class Alipay
         return $this->httpRequest($url, $data);
     }
 
-
-    /**
-     * 校验$value是否非空
-     *  if not set ,return true;
-     *    if is null , return true;
-     **/
     protected function isEmpty($value)
     {
         return !$value;

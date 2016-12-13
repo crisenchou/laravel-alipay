@@ -6,6 +6,8 @@ namespace Crisen\LaravelAlipay\payment;
 class AlipayPrecreate extends Alipay
 {
 
+    public $response = [];
+
     public function __construct()
     {
         $config = config('alipay');
@@ -23,16 +25,36 @@ class AlipayPrecreate extends Alipay
         }
     }
 
-    public function getPayUrl()
+    public function isSuccessful()
+    {
+        if (array_key_exists('alipay_trade_precreate_response', $this->response)) {
+            return true;
+        }
+        return false;
+    }
+
+    public function isTradeStatusOk()
+    {
+        $response = $this->response['alipay_trade_precreate_response'];
+        if (10000 == $response['code']) {
+            return true;
+        }
+        return false;
+    }
+
+    public function getCodeUrl()
+    {
+        $response = $this->response['alipay_trade_precreate_response'];
+        return $response['qr_code'];
+    }
+
+    public function send()
     {
         $this->setSysParams();
         $this->setSign();
-        $responce = $this->httpPost($this->getGateway(), $this->getSysParams());
-        if (isset($responce['qrcode'])) {
-            return $responce['qrcode'];
-        } else {
-            return $responce;
-        }
+        $response = $this->httpPost($this->getGateway(), $this->getSysParams());
+        $response = json_decode($response, true);
+        $this->response = $response;
     }
 
 }
