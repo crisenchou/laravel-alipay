@@ -28,7 +28,14 @@ class AlipayPrecreate extends Alipay
     public function isSuccessful()
     {
         if (array_key_exists('alipay_trade_precreate_response', $this->response)) {
-            return true;
+            $sign = $this->response['sign'];
+            $data = $this->response['alipay_trade_precreate_response'];
+            $data = $this->getSignContent($data);
+            if ($this->verifySign($data, $sign)) {
+                return true;
+            }
+            info('sign error');
+            return false;
         }
         return false;
     }
@@ -42,19 +49,15 @@ class AlipayPrecreate extends Alipay
         return false;
     }
 
+    public function getRequestData()
+    {
+        return $this->response['alipay_trade_precreate_response'];
+    }
+
     public function getCodeUrl()
     {
         $response = $this->response['alipay_trade_precreate_response'];
         return $response['qr_code'];
-    }
-
-    public function send()
-    {
-        $this->setSysParams();
-        $this->setSign();
-        $response = $this->httpPost($this->getGateway(), $this->getSysParams());
-        $response = json_decode($response, true);
-        $this->response = $response;
     }
 
 }

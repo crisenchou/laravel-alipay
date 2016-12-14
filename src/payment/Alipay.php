@@ -61,6 +61,7 @@ abstract class Alipay
     public function setBizContent($bizContent)
     {
         $this->biz_content = $bizContent;
+        return $this;
     }
 
     public function setMethod($method)
@@ -236,4 +237,21 @@ abstract class Alipay
     {
         return !$value;
     }
+
+    protected function validateParams()
+    {
+        //check params
+    }
+
+    public function send()
+    {
+        $this->setSysParams();
+        $this->setSign();
+        $this->validateParams();
+        $response = $this->httpPost($this->getGateway(), $this->getSysParams());
+        $response = json_decode($response, true);
+        $this->response = $response;
+        return $this;
+    }
+
 }
