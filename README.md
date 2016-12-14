@@ -2,31 +2,62 @@
 
 > alipay of laravel5
 
-## Installation
+## 安装
 > composer require "crisen/laravel-alipay":"dev-master"
 
-## Document
+## 文档
 
-1. register service providor
+1. 注册服务提供者
 
          Crisen\LaravelAlipay\AlipayServiceProvider::class,
-   
-2.  publish
+
+2. 配置文件
 
         php  artisan vendor publish 
-         
-3. usage
 
-        $alipay = new AlipayPrecreate(); 
-        $bizContent =[
-            'out_trade_no'=>time(),
-            'totle_amount'=>1,
-            'body'=>'test goods',
-            'subjiect'=>'test'
-        ];
-        $alipay->setBizContent($bizContent);
-        $qrcode = $alipay->getPayUrl();
-        echo $qrcode;
+## 使用方法
+
+### 扫码支付
+
+~~~
+ $alipay = new AlipayPrecreate(); 
+ $bizContent =[
+     'out_trade_no'=>time(),
+     'totle_amount'=>1,
+     'body'=>'test goods',
+     'subjiect'=>'test'
+ ];
+ $alipay->setBizContent($bizContent)->send();
+ if($alipay->isSuccessful() && $alipay->isTradeStatusOk()){
+   $codeUrl = $alipay->getCodeUrl();
+   echo $codeUrl;
+ }
+~~~
+
+### 订单查询
+
+~~~
+$alipay = new AlipayQuery();
+$bizCOntent = [
+  'out_trade_no' => 'xxx'//数据库中的订单号
+];
+$alipay->setBizContent($bizContent)->send();
+if($alipay->isSuccessful() && $alipay->isTradeStatusOk()){
+   //dd($alipay->getRequestData();
+ }
+~~~
+
+### 异步通知
+
+~~~~
+ $alipay = new AlipayNotify($request->all());
+ if ($alipay->isPaid()) {
+    // echo $alipay->getOutTradeNo();
+ } 
+~~~~
+
+
 
 ## License
+
 MIT
