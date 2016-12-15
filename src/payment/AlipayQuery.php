@@ -11,13 +11,10 @@ namespace Crisen\LaravelAlipay\payment;
 
 class AlipayQuery extends Alipay
 {
-
     public function __construct()
     {
         $config = config('alipay');
         $this->setAppid($config['appid']);
-        $this->setVersion($config['version']);
-        $this->setSignType($config['sign_type']);
         $this->setGateway($config['gateway']);
         $this->setMethod('alipay.trade.query');
         $this->setPublicKey($config['alipay_public_key']);
@@ -30,7 +27,7 @@ class AlipayQuery extends Alipay
 
     public function isSuccessful()
     {
-        if (array_key_exists('alipay_trade_query_response', $this->response)) {
+        if (is_array($this->request) && array_key_exists('alipay_trade_query_response', $this->request)) {
             return true;
         }
         return false;
@@ -38,7 +35,7 @@ class AlipayQuery extends Alipay
 
     public function isTradeStatusOk()
     {
-        $response = $this->response['alipay_trade_query_response'];
+        $response = $this->request['alipay_trade_query_response'];
         if (10000 == $response['code']) {
             return true;
         }
@@ -47,7 +44,7 @@ class AlipayQuery extends Alipay
 
     public function getRequestData()
     {
-        return $this->response['alipay_trade_query_response'];
+        return $this->request['alipay_trade_query_response'];
     }
 
 }

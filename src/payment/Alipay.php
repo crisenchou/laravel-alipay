@@ -11,6 +11,7 @@ abstract class Alipay
     private $method;
     private $format = 'json';
     private $charset = 'utf-8';
+    //private $charset = 'GBK';
     private $publicKey;
     private $privateKey;
     private $sign_type = 'RSA';
@@ -21,6 +22,7 @@ abstract class Alipay
     private $gateway;
     private $sysParams = [];
     private $rsaPrivateKeyFilePath;
+    protected $request;
 
 
     public function setGateway($gateway)
@@ -156,16 +158,20 @@ abstract class Alipay
         return $sign;
     }
 
+
     protected function verifySign($data, $sign)
     {
         $pubkey = $this->publicKey;
-        $res = "-----BEGIN RSA PUBLIC KEY-----\n" .
+        $res = "-----BEGIN PUBLIC KEY-----\n" .
             wordwrap($pubkey, 64, "\n", true) .
-            "\n-----END RSA PUBLIC KEY-----";
+            "\n-----END PUBLIC KEY-----";
+
         if (!$res) {
             throw new Exception('您使用的公钥格式错误');
         }
-        return openssl_verify($data, base64_decode($sign), $res);
+
+        $result = openssl_verify($data, base64_decode($sign), $res);
+        return !!$result;
     }
 
     private function sign($data)
@@ -199,6 +205,7 @@ abstract class Alipay
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_FAILONERROR, false);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 
@@ -248,9 +255,12 @@ abstract class Alipay
         $this->setSysParams();
         $this->setSign();
         $this->validateParams();
-        $response = $this->httpPost($this->getGateway(), $this->getSysParams());
-        $response = json_decode($response, true);
-        $this->response = $response;
+        $result = $this->httpPost($this->getGateway(), $this->getSysParams());
+        if (!json_decode($result, true)) {
+            $result = mb_convert_encoding($result, "utf-8", "gb2312");
+        }
+        $result = json_decode($result, true);
+        $this->request = $result;
         return $this;
     }
 

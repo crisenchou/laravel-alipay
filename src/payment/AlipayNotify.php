@@ -11,8 +11,6 @@ namespace Crisen\LaravelAlipay\payment;
 
 class AlipayNotify extends Alipay
 {
-    public $request;
-
     public function __construct($request)
     {
         $config = config('alipay');
@@ -24,7 +22,7 @@ class AlipayNotify extends Alipay
         $sign = $this->request['sign'];
         unset($this->request['sign']);
         unset($this->request['sign_type']);
-        $data = $this->getSignContent($this->response);
+        $data = json_encode($this->response);
         if ($this->verifySign($data, $sign)) {
             if (isset($this->request['trade_status ']) && 'TRADE_SUCCESS' == $this->request['trade_status ']) {
                 return true;

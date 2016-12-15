@@ -13,8 +13,6 @@ class AlipayPrecreate extends Alipay
         $config = config('alipay');
         $this->setAppid($config['appid']);
         $this->setNotifyUrl($config['notify_url']);
-        $this->setVersion($config['version']);
-        $this->setSignType($config['sign_type']);
         $this->setGateway($config['gateway']);
         $this->setMethod('alipay.trade.precreate');
         $this->setPublicKey($config['alipay_public_key']);
@@ -27,11 +25,10 @@ class AlipayPrecreate extends Alipay
 
     public function isSuccessful()
     {
-        if (array_key_exists('alipay_trade_precreate_response', $this->response)) {
-            $sign = $this->response['sign'];
-            $data = $this->response['alipay_trade_precreate_response'];
-            $data = $this->getSignContent($data);
-            if ($this->verifySign($data, $sign)) {
+        if (is_array($this->request) && array_key_exists('alipay_trade_precreate_response', $this->request)) {
+            $sign = $this->request['sign'];
+            $data = $this->request['alipay_trade_precreate_response'];
+            if ($this->verifySign(json_encode($data), $sign)) {
                 return true;
             }
             info('sign error');
@@ -42,7 +39,7 @@ class AlipayPrecreate extends Alipay
 
     public function isTradeStatusOk()
     {
-        $response = $this->response['alipay_trade_precreate_response'];
+        $response = $this->request['alipay_trade_precreate_response'];
         if (10000 == $response['code']) {
             return true;
         }
@@ -51,12 +48,12 @@ class AlipayPrecreate extends Alipay
 
     public function getRequestData()
     {
-        return $this->response['alipay_trade_precreate_response'];
+        return $this->request['alipay_trade_precreate_response'];
     }
 
     public function getCodeUrl()
     {
-        $response = $this->response['alipay_trade_precreate_response'];
+        $response = $this->request['alipay_trade_precreate_response'];
         return $response['qr_code'];
     }
 

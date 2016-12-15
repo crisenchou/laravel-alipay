@@ -25,5 +25,4 @@ class AlipayServiceProvider extends ServiceProvider
     {
         
     }
-
 }
