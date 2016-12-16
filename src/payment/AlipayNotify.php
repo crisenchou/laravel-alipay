@@ -11,10 +11,16 @@ namespace Crisen\LaravelAlipay\payment;
 
 class AlipayNotify extends Alipay
 {
-    public function __construct($request)
+    public function __construct()
     {
         $config = config('alipay');
         $this->setPublicKey($config['alipay_public_key']);
+    }
+
+    public function options($request)
+    {
+        $this->request = $request;
+        return $this;
     }
 
     public function isPaid()

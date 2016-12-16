@@ -8,22 +8,18 @@
 
 namespace Crisen\LaravelAlipay;
 
+use Mockery\CountValidator\Exception;
 
 class AlipayFactory
 {
 
     public static function factory($gateway)
     {
-        if (class_exists($gateway)) {
-            return new $gateway;
+        $classname = 'Crisen\LaravelAlipay\payment\Alipay' . ucfirst($gateway);
+        if (class_exists($classname)) {
+            return new $classname;
         } else {
-            info('class not exist');
+            throw new Exception('gateway is wrong');
         }
     }
-
-//    public static function __callStatic($name, $arguments)
-//    {
-//
-//    }
-
 }
