@@ -6,7 +6,7 @@
  * Time: 9:41
  */
 
-namespace Crissen\LaravelAlipay\Facades;
+namespace Crisen\LaravelAlipay\Facades;
 
 
 use Illuminate\Support\Facades\Facade;
