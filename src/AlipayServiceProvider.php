@@ -5,7 +5,6 @@ namespace Crisen\LaravelAlipay;
 use Illuminate\Support\ServiceProvider;
 
 
-
 class AlipayServiceProvider extends ServiceProvider
 {
     /**
@@ -23,6 +22,9 @@ class AlipayServiceProvider extends ServiceProvider
 
     public function register()
     {
-        
+
+        $this->app->singleton('Alipay', function ($app) {
+            return new AlipayFactory();
+        });
     }
 }

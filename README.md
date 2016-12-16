@@ -1,6 +1,6 @@
 # laravel-alipay
 
-> alipay of laravel5
+> 支付宝扫码支付
 
 ## 安装
 > composer require "crisen/laravel-alipay":"dev-master"
