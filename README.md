@@ -31,36 +31,36 @@
 
 ### 扫码支付
 
-~~~
- 	$alipay = Alipay::factory('precreate');
-    $alipay->setBizContent([
-        'out_trade_no' => $outTradeNo,
-        'subject' => 'test',
-        'total_amount' => 1,
-        'body' => 'test goods',
-    ])->send();
- 	if($alipay->isSuccessful() && $alipay->isTradeStatusOk()){
-  		 $codeUrl = $alipay->getCodeUrl();
-  		 echo $codeUrl;
- 	}
+~~~php
+$alipay = Alipay::factory('precreate');
+$alipay->setBizContent([
+    'out_trade_no' => $outTradeNo,
+    'subject' => 'test',
+    'total_amount' => 1,
+    'body' => 'test goods',
+])->send();
+if($alipay->isSuccessful() && $alipay->isTradeStatusOk()){
+    $codeUrl = $alipay->getCodeUrl();
+    echo $codeUrl;
+}
 ~~~
 
 ### 订单查询
 
-~~~
-	$alipay = Alipay::factory('query');
-	$bizCOntent = [
- 	 'out_trade_no' => 'xxx'//数据库中的订单号
-	];
-	$alipay->setBizContent($bizContent)->send();
-	if($alipay->isSuccessful() && $alipay->isTradeStatusOk()){
-   		//dd($alipay->getRequestData();
- 	}
+~~~php
+$alipay = Alipay::factory('query');
+$bizCOntent = [
+	'out_trade_no' => 'xxx'//数据库中的订单号
+];
+$alipay->setBizContent($bizContent)->send();
+if($alipay->isSuccessful() && $alipay->isTradeStatusOk()){
+	//dd($alipay->getRequestData();
+}
 ~~~
 
 ### 异步通知
 
-~~~~
+~~~~php
  $alipay = Alipay::factory('notify')->options($request->all());
  if ($alipay->isPaid()) {
     // echo $alipay->getOutTradeNo();
